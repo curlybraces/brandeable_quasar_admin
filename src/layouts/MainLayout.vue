@@ -34,7 +34,7 @@
           header
           class="text-grey-8"
         >
-          Essential Links
+          Menú de Navegación
         </q-item-label>
         <EssentialLink
           v-for="link in essentialLinks"
@@ -55,46 +55,46 @@ import EssentialLink from 'components/EssentialLink.vue'
 
 const linksData = [
   {
-    title: 'Docs',
+    title: 'Documentos',
     caption: 'quasar.dev',
     icon: 'school',
-    link: 'https://quasar.dev'
+    link: '/'
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
+    title: 'Agregar Cuenta',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'add-cuenta'
   },
   {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
+    title: 'Ver Cuentas',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'cuentas'
   },
   {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
+    title: 'Agregar Empresa',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'add-empresa'
   },
   {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
+    title: 'Ver Empresas',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'empresas'
   },
   {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
+    title: 'Categorias',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'categorias'
   },
   {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
+    title: 'Cotizaciones',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'cotizaciones'
   }
 ];
 
