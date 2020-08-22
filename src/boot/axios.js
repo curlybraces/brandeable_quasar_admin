@@ -4,8 +4,8 @@ import {LocalStorage} from "quasar";
 
 Vue.prototype.$axios = axios.create({
   baseURL: 'http://localhost:8000',
-  headers: {
+  /*headers: {
     'Access-Control-Allow-Origin': '*',
     'Authorization': LocalStorage.getItem("token"),
-  }
+  }*/
 })

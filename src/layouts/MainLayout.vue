@@ -95,6 +95,18 @@ const linksData = [
     caption: 'quasar.dev',
     icon: 'school',
     link: 'cotizaciones'
+  },
+  {
+    title: 'Ver Servicios',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'servicios'
+  },
+  {
+    title: 'Ver Presentaciones',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'presentaciones'
   }
 ];
 

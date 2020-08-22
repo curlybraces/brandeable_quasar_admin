@@ -3,7 +3,7 @@
   <q-page>
     <div class="row q-mt-md justify-center">
 
-      <div class="col-md-10 col-xs-12">
+      <div class="col-md-12 col-xs-12">
         <q-card bordered class="bg-white items-center flex-sm-center flex-xs-center flex-center" flat>
             <div class="q-pa-md">
                 <q-table
@@ -18,7 +18,7 @@
                 virtual-scroll
                 >
                 <template v-slot:top-left>
-                    <q-btn @click="dialog=true" color="primary" label="Agregar Categoria"></q-btn>
+                    <q-btn :to="'/add-presentacion'" color="primary" label="Agregar nueva presentación"></q-btn>
                 </template>
                 <template v-slot:body-cell-archivo="props">
                     <q-td :props="props">
@@ -28,9 +28,9 @@
                 <template v-slot:body-cell-actions="props">
                     <q-td :props="props">
                     <!--            <q-btn dense round flat color="grey" @click="editRow(props)" icon="edit"></q-btn>-->
-                        <q-btn @click="editCategoria(props)" color="grey" dense flat icon="edit" round
+                        <q-btn @click="editPresentacion(props)" color="grey" dense flat icon="edit" round
                                 title="diagnóstico"></q-btn>
-                        <q-btn @click="deleteCategoria(props)" color="grey" dense flat icon="delete" round title="borrar"></q-btn>
+                        <q-btn @click="deletePresentacion(props)" color="grey" dense flat icon="delete" round title="borrar"></q-btn>
 
                     </q-td>
                 </template>
@@ -66,18 +66,6 @@
       </div>
     </div>
 
-    <q-dialog persistent v-model="dialog">
-      <q-card @keyup.enter="guardar" style="min-width: 350px">
-        <q-card-section class="">
-          <q-input autofocus dense label="Nombre" outlined v-model="Categoria.nombre"/>
-        </q-card-section>
-        <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Cancelar" v-close-popup/>
-          <q-btn @click="crateOrUpdate" flat label="Guardar" v-close-popup/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
   </q-page>
 </template>
 
@@ -99,7 +87,10 @@ export default {
 
       columns: [
         { name: 'id', align: 'left', label: 'Id', field: 'id', sortable: true },
+        { name: 'tipo', align: 'left', label: 'Tipo de Presentación', field: 'tipo', sortable: true },
         { name: 'nombre', align: 'left', label: 'Nombre', field: 'nombre', sortable: true },
+        { name: 'created', align: 'left', label: 'Fec. Creación', field: 'created', sortable: true },
+        { name: 'modified', align: 'left', label: 'Últ Modificación', field: 'modified', sortable: true },
         { name: 'actions', label: 'Acciones', field: '', align: 'center' }
       ],
       categorias: [],
@@ -110,7 +101,7 @@ export default {
   },
 
   async created () {
-    await this.getCategorias()
+    await this.getPresentaciones()
   },
   methods: {
     async rowClick (e, row) {
@@ -122,8 +113,8 @@ export default {
       this.card.fecha = row.creado
       this.card.ruta_voucher = this.$axios.defaults.baseURL + '/' + row.archivo
     },
-    async getCategorias () {
-      this.$axios.get('api/directorio_categorias')
+    async getPresentaciones () {
+      this.$axios.get('api/presentaciones')
         .then((res) => {
           this.categorias = res.data
         })
@@ -131,8 +122,8 @@ export default {
           console.log(err)
         })
     },
-    editCategoria (prop) {
-      this.$axios.get('api/directorio_categorias/' + prop.row.id)
+    editPresentacion (prop) {
+      this.$axios.get('api/presentaciones/' + prop.row.id)
         .then((res) => {
           console.log(res)
           this.Categoria.id = res.data.id
@@ -144,11 +135,11 @@ export default {
       this.dialog = true
       this.createOrUpdate = 'update'
     },
-    async deleteCategoria (prop) {
-      this.$axios.delete('api/directorio_categorias/' + prop.row.id)
+    async deletePresentacion (prop) {
+      this.$axios.delete('api/presentaciones/' + prop.row.id)
         .then((res) => {
           console.log(res)
-          this.getCategorias()
+          this.getPresentaciones()
         })
         .catch((err) => {
           console.log(err)
@@ -172,35 +163,6 @@ export default {
       this.prevPage = Number(data.prev_page_url ? data.prev_page_url.slice(-1) : 1)
       this.totalPages = Number(data.last_page_url ? data.last_page_url.slice(-1) : 1)
       this.rows = data.data
-    },
-    crateOrUpdate () {
-      if (this.createOrUpdate === 'create') {
-        this.guardar()
-      } else {
-        this.update()
-      }
-    },
-    guardar () {
-      console.log('guardar')
-      this.$axios.post('api/directorio_categorias', this.Categoria)
-        .then((res) => {
-          console.log(res)
-          this.getCategorias()
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    },
-    update () {
-      console.log('update')
-      this.$axios.put('api/directorio_categorias/' + this.Categoria.id, this.Categoria)
-        .then((res) => {
-          console.log(res)
-          this.getCategorias()
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     }
   }
 }
