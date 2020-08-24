@@ -7,7 +7,7 @@
             <div class="q-pa-md">
                 <q-table
                 :columns="columns"
-                :data="categorias"
+                :data="usuarios"
                 :pagination.sync="pagination"
                 @row-dblclick="rowClick"
                 bordered
@@ -17,7 +17,7 @@
                 virtual-scroll
                 >
                 <template v-slot:top-left>
-                    <q-btn @click="dialog=true" color="primary" label="Agregar nuevo servicio"></q-btn>
+                    <q-btn :to="'add-usuario'" color="primary" label="Agregar nuevo Usuario"></q-btn>
                 </template>
                 <template v-slot:body-cell-archivo="props">
                     <q-td :props="props">
@@ -27,9 +27,9 @@
                 <template v-slot:body-cell-actions="props">
                     <q-td :props="props">
                     <!--            <q-btn dense round flat color="grey" @click="editRow(props)" icon="edit"></q-btn>-->
-                        <q-btn @click="editServicio(props)" color="grey" dense flat icon="edit" round
-                                title="diagnóstico"></q-btn>
-                        <q-btn @click="deleteServicio(props)" color="grey" dense flat icon="delete" round title="borrar"></q-btn>
+                        <q-btn color="grey" dense flat icon="edit" round
+                                title="diagnóstico" :to="'/add-usuario/' + props.row.id"></q-btn>
+                        <q-btn @click="deleteUsuario(props)" color="grey" dense flat icon="delete" round title="borrar"></q-btn>
 
                     </q-td>
                 </template>
@@ -87,13 +87,12 @@ export default {
       columns: [
         { name: 'id', align: 'left', label: 'Id', field: 'id', sortable: true },
         { name: 'nombre', align: 'left', label: 'Nombre', field: 'nombre', sortable: true },
-        { name: 'precio_moneda', align: 'left', label: 'Moneda', field: 'precio_moneda', sortable: true },
-        { name: 'precio_venta', align: 'left', label: 'Precio Venta', field: 'precio_venta', sortable: true },
-        { name: 'precio_compra', align: 'left', label: 'Precio Compra', field: 'precio_compra', sortable: true },
-        { name: 'periodo_renovacion', align: 'left', label: 'Nombre', field: 'periodo_renovacion', sortable: true },
+        { name: 'usuario', align: 'left', label: 'Usuario', field: 'usr', sortable: true },
+        { name: 'cargo', align: 'left', label: 'Cargo', field: 'rol', sortable: true },
+        { name: 'fecha_registro', align: 'left', label: 'Fec. Registro', field: 'created', sortable: true },
         { name: 'actions', label: 'Acciones', field: '', align: 'center' }
       ],
-      categorias: [],
+      usuarios: [],
       pagination: {
         rowsPerPage: 10
       }
@@ -101,7 +100,7 @@ export default {
   },
 
   async created () {
-    await this.getServicios()
+    await this.getUsuarios()
   },
   methods: {
     async rowClick (e, row) {
@@ -113,17 +112,17 @@ export default {
       this.card.fecha = row.creado
       this.card.ruta_voucher = this.$axios.defaults.baseURL + '/' + row.archivo
     },
-    async getServicios () {
-      this.$axios.get('api/servicios')
+    async getUsuarios () {
+      this.$axios.get('api/usuarios')
         .then((res) => {
-          this.categorias = res.data
+          this.usuarios = res.data
         })
         .catch((err) => {
           console.log(err)
         })
     },
-    editServicio (prop) {
-      this.$axios.get('api/servicios/' + prop.row.id)
+    editUsuario (prop) {
+      this.$axios.get('api/usuarios/' + prop.row.id)
         .then((res) => {
           console.log(res)
           this.Categoria.id = res.data.id
@@ -135,11 +134,11 @@ export default {
       this.dialog = true
       this.createOrUpdate = 'update'
     },
-    async deleteServicio (prop) {
-      this.$axios.delete('api/servicios/' + prop.row.id)
+    async deleteUsuario (prop) {
+      this.$axios.delete('api/usuarios/' + prop.row.id)
         .then((res) => {
           console.log(res)
-          this.getServicios()
+          this.getUsuarios()
         })
         .catch((err) => {
           console.log(err)

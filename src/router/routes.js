@@ -18,7 +18,13 @@ const routes = [
       { path: '/marcas-add', component: () => import('pages/MercaderiasMarcaAdd.vue') },
       { path: '/marcas-add/:id', component: () => import('pages/MercaderiasMarcaAdd.vue') },
       { path: '/mercaderia_categorias', component: () => import('pages/MercaderiasCategoria.vue') },
-      { path: '/items', component: () => import('pages/MercaderiasItems.vue') }
+      { path: '/items', component: () => import('pages/MercaderiasItems.vue') },
+      { path: '/notificaciones', component: () => import('pages/Notificaciones.vue') },
+      { path: '/add-notificacion', component: () => import('pages/AddNotificacion.vue') },
+      { path: '/add-notificacion/:id', component: () => import('pages/AddNotificacion.vue') },
+      { path: '/usuarios', component: () => import('pages/Usuarios.vue') },
+      { path: '/add-usuario', component: () => import('pages/AddUsuario.vue') },
+      { path: '/add-usuario/:id', component: () => import('pages/AddUsuario.vue') }
     ]
   },
 

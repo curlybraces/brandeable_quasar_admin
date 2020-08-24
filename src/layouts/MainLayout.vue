@@ -107,6 +107,24 @@ const linksData = [
     caption: 'quasar.dev',
     icon: 'school',
     link: 'presentaciones'
+  },
+  {
+    title: 'Agregar Notificacion',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'add-notificacion'
+  },
+  {
+    title: 'Ver Notificaciones',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'notificaciones'
+  },
+  {
+    title: 'Usuarios',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'usuarios'
   }
 ];
 
