@@ -37,19 +37,61 @@
                 </div>
               </div>
               <div class="col-md-3">
-                <div class="row">
+                <q-option-group
+                  :options="options"
+                  label="Notifications"
+                  type="checkbox"
+                  v-model="group"
+                />
+                <!--<div class="row">
+                  <ul id="example">
+                    <li v-for="item in categorias" :key="item.id">
+                      {{item.nombre}}
+                    </li>
+                  </ul>
                   Contenido
-                </div>
+                </div>-->
               </div>
             </div>
-            <div class="row">
-              <div class="col-md-12">
-                <h5>Contactos</h5>
-              </div>
+         
+              <h5>Contactos</h5>              
+              <q-table
+              :columns="columns"
+              :data="contactos"
+              :pagination.sync="pagination"
+              @row-dblclick="rowClick"
+              bordered
+              hide-bottom
+              row-key="name"
+              title=""
+              virtual-scroll
+              >
+              <template v-slot:body-cell-archivo="props">
+                  <q-td :props="props">
+                  <q-btn color="grey" dense flat label="Ver"></q-btn>
+                  </q-td>
+              </template>
+              <template v-slot:body-cell-actions="props">
+                  <q-td :props="props">
+                  <!--            <q-btn dense round flat color="grey" @click="editRow(props)" icon="edit"></q-btn>-->
+                      <q-btn @click="addContacto(props)" color="grey" dense flat icon="edit" round
+                              title="modificar"></q-btn>
+                      <q-btn @click="deleteContacto(props)" color="grey" dense flat icon="delete" round title="eliminar"></q-btn>
+
+                  </q-td>
+              </template>
+              <template v-slot:body-cell-creado="props">
+                  <q-td :props="props">
+
+                  <q-item-label>{{ new Date(props.row.creado).toLocaleDateString() }}</q-item-label>
+                  </q-td>
+              </template>
+              </q-table>
+              
               <div class="col-md-12">
                 <q-btn @click="crateOrUpdate" color="primary" label="Guardar" v-close-popup/>
               </div>
-            </div>
+            
           </div>
         </q-card>
       </div>
@@ -105,21 +147,37 @@ export default {
       prevPage: 0,
       nextPage: 0,
 
+      contactos: [],
       columns: [
-        { name: 'id', align: 'left', label: 'Id', field: 'id', sortable: true },
-        { name: 'nombre', align: 'left', label: 'Nombre', field: 'nombre', sortable: true },
+        { name: 'ani', align: 'left', label: 'DNI', field: 'dni', sortable: true },
+        { name: 'nombres', align: 'left', label: 'Nombres', field: 'nombres', sortable: true },
+        { name: 'apellidos', align: 'left', label: 'Apellidos', field: 'apellidos', sortable: true },
+        { name: 'cargo', align: 'left', label: 'Cargo', field: 'cargo', sortable: true },
+        { name: 'telefono', align: 'left', label: 'Teléfono', field: 'telefono', sortable: true },
+        { name: 'anexo', align: 'left', label: 'Anexo', field: 'anexo', sortable: true },
         { name: 'actions', label: 'Acciones', field: '', align: 'center' }
       ],
-      contactos: [],
+      
       categorias: [],
       pagination: {
         rowsPerPage: 10
-      }
+      },
+
+      group: [],
+
+      options: []
+        /*{ label: 'Battery too low', value: 'bat' },
+        { label: 'Friend request', value: 'friend', color: 'green' },
+        { label: 'Picture uploaded', value: 'upload', color: 'red' }
+      ]*/
     }
   },
 
   async created () {
-    await this.getCategorias()
+    //await this.getCategorias()
+    await this.loadCategorias()
+    //console.log(this.options)  
+
   },
   methods: {
     async rowClick (e, row) {
@@ -130,6 +188,20 @@ export default {
       this.card.diagnostico = row.diagnostico
       this.card.fecha = row.creado
       this.card.ruta_voucher = this.$axios.defaults.baseURL + '/' + row.archivo
+    },
+    async loadCategorias () {
+      this.$axios.get('api/directorio_categorias')
+        .then((res) => {
+          this.categorias = res.data
+          for(let i=0; i<this.categorias.length; i++)
+          {             
+            this.options.push({ label: this.categorias[i].nombre, value: 'input'+this.categorias[i].id });
+          }
+
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
     async getCategorias () {
       this.$axios.get('api/directorio_categorias')
@@ -209,6 +281,12 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+    addContacto (prop) {
+
+    },
+    deleteContacto (pror) {
+
     }
   }
 }

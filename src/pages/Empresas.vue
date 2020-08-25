@@ -2,7 +2,7 @@
   <q-page>
     <div class="row q-mt-md justify-center">
 
-      <div class="col-md-10 col-xs-12">
+      <div class="col-md-12 col-xs-12">
         <q-card bordered class="bg-white items-center flex-sm-center flex-xs-center flex-center" flat>
             <div class="q-pa-md">
                 <q-table

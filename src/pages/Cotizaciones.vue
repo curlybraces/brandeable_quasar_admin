@@ -1,10 +1,10 @@
-
 <template>
   <q-page>
     <div class="row q-mt-md justify-center">
 
-      <div class="col-md-10 col-xs-12">
+      <div class="col-md-12 col-xs-12">
         <q-card bordered class="bg-white items-center flex-sm-center flex-xs-center flex-center" flat>
+            
             <div class="q-pa-md">
                 <q-table
                 :columns="columns"
@@ -18,7 +18,7 @@
                 virtual-scroll
                 >
                 <template v-slot:top-left>
-                    <q-btn @click="dialog=true" color="primary" label="Nueva Cotización"></q-btn>
+                    <q-btn :to="'add-cotizacion'" color="primary" label="Nueva Cotización"></q-btn>
                 </template>
                 <template v-slot:body-cell-archivo="props">
                     <q-td :props="props">
@@ -66,18 +66,6 @@
       </div>
     </div>
 
-    <q-dialog persistent v-model="dialog">
-      <q-card @keyup.enter="guardar" style="min-width: 350px">
-        <q-card-section class="">
-          <q-input autofocus dense label="Nombre" outlined v-model="Cotizacion.nombre"/>
-        </q-card-section>
-        <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Cancelar" v-close-popup/>
-          <q-btn @click="crateOrUpdate" flat label="Guardar" v-close-popup/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
   </q-page>
 </template>
 
@@ -102,8 +90,8 @@ export default {
 
       columns: [
         { name: 'id', align: 'left', label: 'Id', field: 'id', sortable: true },
-        { name: 'cliente', align: 'left', label: 'Cliente', field: 'cuenta', sortable: true },
-        { name: 'paquete_servicio', align: 'left', label: 'Paquete de Servicios', field: 'paquete_servicio', sortable: true },
+        { name: 'cuenta_id', align: 'left', label: 'Cliente', field: 'cuenta.id', sortable: true },
+        { name: 'paquete_servicios', align: 'left', label: 'Paquete de Servicios', field: 'paquete_servicios.id', sortable: true },
         { name: 'fecha_creacion', align: 'left', label: 'Fec. Creación', field: 'created', sortable: true },
         { name: 'actions', label: 'Acciones', field: '', align: 'center' }
       ],
@@ -131,14 +119,15 @@ export default {
       this.$axios.get('api/cotizaciones')
         .then((res) => {
           this.cotizaciones = res.data
-          console.log(res.data)
+          console.log("JA")
+          console.log(this.cotizaciones)
         })
         .catch((err) => {
           console.log(err)
         })
     },
     editCotizacion (prop) {
-      this.$axios.get('api/directorio_categorias/' + prop.row.id)
+      this.$axios.get('api/cotizaciones/' + prop.row.id)
         .then((res) => {
           console.log(res)
           this.Categoria.id = res.data.id
@@ -151,7 +140,7 @@ export default {
       this.createOrUpdate = 'update'
     },
     async deleteCotizacion (prop) {
-      this.$axios.delete('api/directorio_categorias/' + prop.row.id)
+      this.$axios.delete('api/cotizaciones/' + prop.row.id)
         .then((res) => {
           console.log(res)
         })
