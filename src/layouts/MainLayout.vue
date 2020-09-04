@@ -73,6 +73,12 @@ const linksData = [
     link: 'cuentas'
   },
   {
+    title: 'Ver Proyectos',
+    caption: 'quasar.dev',
+    icon: 'school',
+    link: 'proyectos'
+  },
+  {
     title: 'Agregar Empresa',
     caption: 'quasar.dev',
     icon: 'school',

@@ -5,30 +5,35 @@
         <q-card bordered class="bg-white items-center flex-sm-center flex-xs-center flex-center" flat>
 
           <div class="q-pa-md q-gutter-md">
-                <div class="row">
-                  
-                  <div class="col-md-8 offset-md-2">
-                      <q-input class="espacio" outlined label="Nombre" v-model="Usuario.nombre"/>
-                  </div>
-                  <div class="col-md-8 offset-md-2">
-                      <q-input class="espacio" standout  outlined label="Rol / Cargo"  v-model="Usuario.rol"/>
-                  </div>
-                  <div class="col-md-8 offset-md-2"><q-input class="espacio" outlined label="Usuario"  v-model="Usuario.usr"/>
-                  </div>
-                  <div class="col-md-8 offset-md-2">
-                      <q-input v-show="isCreateOrUpdate" class="espacio" outlined label="Contraseña"  v-model="Usuario.pwd"  type="password"/>
-                  </div>
-            </div>
             <div class="row">
-              <div class="col-md-10 offset-md-2">
-                <q-btn @click="crateOrUpdate" color="primary" label="Guardar" v-close-popup/>
-              </div>
+              
+                <div class="col-md-12">
+                    <q-input class="espacio" outlined label="Tarea"  v-model="Tarea.tarea"/>
+                </div>
+              
+                <div class="col-md-12">
+                <q-input class="espacio" label="Descripción"
+                    filled
+                    type="textarea"  v-model="Tarea.descripcion"
+                />
+                </div>
+                <div class="col-md-12">
+                    <q-input class="espacio" outlined label="Encargado"  v-model="Tarea.encargado"/>
+                </div>
+                <div class="col-md-12">
+                    <q-input class="espacio" outlined label="Estado"  v-model="Tarea.estado"/>
+                </div>
+               
             </div>
+              <div class="row">
+                <div class="col-md-12">
+                    <q-btn @click="crateOrUpdate" color="primary" label="Guardar" v-close-popup/>
+                </div>
+              </div>            
           </div>
         </q-card>
       </div>
     </div>
-
   </q-page>
 </template>
 
@@ -36,16 +41,15 @@
 export default {
   name: 'PageIndex',
   data: function () {
-    
     return {
-      Usuario: {
-        id: '',
-        rol: '',
-        nombre: '',
-        usr: '',
-        pwd: '',
+      
+      Tarea: {
+        proyecto_id: '',
+        tarea: '',
+        descripcion: '',
+        encargado: '',
+        estado: ''
       },
-      isCreateOrUpdate: true,
 
       createOrUpdate: 'create',
       dialog: false,
@@ -54,13 +58,35 @@ export default {
       prevPage: 0,
       nextPage: 0,
 
+      contactos: [],
+      columns: [
+        { name: 'ani', align: 'left', label: 'DNI', field: 'dni', sortable: true },
+        { name: 'nombres', align: 'left', label: 'Nombres', field: 'nombres', sortable: true },
+        { name: 'apellidos', align: 'left', label: 'Apellidos', field: 'apellidos', sortable: true },
+        { name: 'cargo', align: 'left', label: 'Cargo', field: 'cargo', sortable: true },
+        { name: 'telefono', align: 'left', label: 'Teléfono', field: 'telefono', sortable: true },
+        { name: 'anexo', align: 'left', label: 'Anexo', field: 'anexo', sortable: true },
+        { name: 'actions', label: 'Acciones', field: '', align: 'center' }
+      ],
+      
+      categorias: [],
       pagination: {
         rowsPerPage: 10
-      }, 
+      },
+
+      group: [],
+
+      options: []
+        /*{ label: 'Battery too low', value: 'bat' },
+        { label: 'Friend request', value: 'friend', color: 'green' },
+        { label: 'Picture uploaded', value: 'upload', color: 'red' }
+      ]*/
     }
   },
+
   async created () {
-    this.isEditOrUpdate(this.$route.params.id)
+    this.Tarea.proyecto_id = this.$route.params.idProyecto
+
   },
   methods: {
     async rowClick (e, row) {
@@ -71,29 +97,6 @@ export default {
       this.card.diagnostico = row.diagnostico
       this.card.fecha = row.creado
       this.card.ruta_voucher = this.$axios.defaults.baseURL + '/' + row.archivo
-    },
-    isEditOrUpdate(){
-      console.log(this.$routes)
-        if (this.$route.params.id === undefined) {
-            this.createOrUpdate = 'create'
-        } else {
-            this.btnName = 'Modificar'
-            this.createOrUpdate = 'update'
-            this.isCreateOrUpdate = false
-            this.getUsuario(this.$route.params.id)
-        }
-        console.log(this.btnName)
-    },
-    getUsuario (id) {
-      console.log("id"+id)
-      this.$axios.get('api/usuarios/' + id)
-        .then((res) => {
-          console.log('Mercaderias Items:', res)
-          this.Usuario = res.data
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     editEmpresa (prop) {
       this.$axios.get('api/directorio_categorias/' + prop.row.id)
@@ -135,10 +138,11 @@ export default {
       }
     },
     guardar () {
-      console.log('guardar')
-      this.$axios.post('api/usuarios', this.Usuario)
+        console.log(this.Tarea)
+        this.$axios.post('api/tareas', this.Tarea)
         .then((res) => {
-          this.$router.push("/usuarios")
+          console.log(res)
+          this.$router.push("/tareas/"+this.Tarea.proyecto_id)
         })
         .catch((err) => {
           console.log(err)
@@ -146,13 +150,19 @@ export default {
     },
     update () {
       console.log('update')
-      this.$axios.put('api/usuarios/' + this.Usuario.id, this.Usuario)
+      this.$axios.put('api/proyectos/' + this.Proyecto.id, this.Proyecto)
         .then((res) => {
-          this.$router.push("/usuarios")
+          console.log(res)
         })
         .catch((err) => {
           console.log(err)
         })
+    },
+    addContacto (prop) {
+
+    },
+    deleteContacto (pror) {
+
     }
   }
 }

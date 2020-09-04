@@ -2,7 +2,7 @@
   <q-item
     clickable
     tag="a"
-    :to="link"
+    @click="to(link)"
   >
     <q-item-section
       v-if="icon"
@@ -43,6 +43,11 @@ export default {
       type: String,
       default: ''
     }
-  }
+  },
+   methods: {
+     to(link){
+       this.$router.push("/"+link)
+     }
+   }
 }
 </script>

@@ -1,13 +1,14 @@
+
 <template>
   <q-page>
     <div class="row q-mt-md justify-center">
 
-      <div class="col-md-12 col-xs-12">
+      <div class="col-md-10 col-xs-12">
         <q-card bordered class="bg-white items-center flex-sm-center flex-xs-center flex-center" flat>
             <div class="q-pa-md">
                 <q-table
                 :columns="columns"
-                :data="usuarios"
+                :data="Proyectos"
                 :pagination.sync="pagination"
                 @row-dblclick="rowClick"
                 bordered
@@ -17,7 +18,7 @@
                 virtual-scroll
                 >
                 <template v-slot:top-left>
-                    <q-btn :to="'add-usuario'" color="primary" label="Agregar nuevo Usuario"></q-btn>
+                    <q-btn :to="'add-proyecto'" color="primary" label="Agregar Proyecto"></q-btn>
                 </template>
                 <template v-slot:body-cell-archivo="props">
                     <q-td :props="props">
@@ -26,11 +27,11 @@
                 </template>
                 <template v-slot:body-cell-actions="props">
                     <q-td :props="props">
-                    <!--            <q-btn dense round flat color="grey" @click="editRow(props)" icon="edit"></q-btn>-->
-                        <q-btn color="grey" dense flat icon="edit" round
-                                title="diagnóstico" :to="'/add-usuario/' + props.row.id"></q-btn>
-                        <q-btn @click="deleteUsuario(props)" color="grey" dense flat icon="delete" round title="borrar"></q-btn>
-
+                    <q-btn :to="'/tareas/' + props.row.id" color="grey" dense flat icon="edit" round
+                                title="Tareas"></q-btn>
+                        <!--<q-btn @click="editProyecto(props)" color="grey" dense flat icon="edit" round
+                                title="diagnóstico"></q-btn>-->
+                        <q-btn @click="deleteProyecto(props)" color="grey" dense flat icon="delete" round title="borrar"></q-btn>
                     </q-td>
                 </template>
                 <template v-slot:body-cell-creado="props">
@@ -64,21 +65,15 @@
         </q-card>
       </div>
     </div>
-
   </q-page>
 </template>
 
 <script>
-import { QSpinnerCube } from 'quasar'
 export default {
   name: 'PageIndex',
   data: function () {
-    
     return {
-      Usuarios: {
-        id: '',
-        nombre: ''
-      },
+
       createOrUpdate: 'create',
       dialog: false,
       page: 1,
@@ -88,13 +83,13 @@ export default {
 
       columns: [
         { name: 'id', align: 'left', label: 'Id', field: 'id', sortable: true },
-        { name: 'nombre', align: 'left', label: 'Nombre', field: 'nombre', sortable: true },
-        { name: 'usuario', align: 'left', label: 'Usuario', field: 'usr', sortable: true },
-        { name: 'cargo', align: 'left', label: 'Cargo', field: 'rol', sortable: true },
-        { name: 'fecha_registro', align: 'left', label: 'Fec. Registro', field: 'created', sortable: true },
+        //{ name: 'cuenta', align: 'left', label: 'Cuenta', field: row => row.cuenta.razon_social , sortable: true },
+        { name: 'contacto', align: 'left', label: 'Contacto', field: row => row.contacto.nombres, sortable: true },
+        { name: 'nombre', align: 'left', label: 'Título', field: 'nombre', sortable: true },
+        { name: 'estado', align: 'left', label: 'Estado', field: 'estado', sortable: true },
         { name: 'actions', label: 'Acciones', field: '', align: 'center' }
       ],
-      usuarios: [],
+      Proyectos: [],
       pagination: {
         rowsPerPage: 10
       }
@@ -102,7 +97,7 @@ export default {
   },
 
   async created () {
-    await this.getUsuarios()
+    await this.getProyectos()
   },
   methods: {
     async rowClick (e, row) {
@@ -114,17 +109,18 @@ export default {
       this.card.fecha = row.creado
       this.card.ruta_voucher = this.$axios.defaults.baseURL + '/' + row.archivo
     },
-    async getUsuarios () {
-      this.$axios.get('api/usuarios')
+    async getProyectos () {
+      this.$axios.get('api/proyectos')
         .then((res) => {
-          this.usuarios = res.data
+            console.log(res.data)
+          this.Proyectos = res.data
         })
         .catch((err) => {
           console.log(err)
         })
     },
-    editUsuario (prop) {
-      this.$axios.get('api/usuarios/' + prop.row.id)
+    editProyecto (prop) {
+      this.$axios.get('api/directorio_categorias/' + prop.row.id)
         .then((res) => {
           console.log(res)
           this.Categoria.id = res.data.id
@@ -136,12 +132,10 @@ export default {
       this.dialog = true
       this.createOrUpdate = 'update'
     },
-    async deleteUsuario (prop) {
-      this.$axios.delete('api/usuarios/' + prop.row.id)
+    async deleteProyecto (prop) {
+      this.$axios.delete('api/proyectos/' + prop.row.id)
         .then((res) => {
-          console.log(res)
-          this.getUsuarios()
-          this.$q.loading.hide()
+          this.getProyectos()
         })
         .catch((err) => {
           console.log(err)
@@ -165,6 +159,35 @@ export default {
       this.prevPage = Number(data.prev_page_url ? data.prev_page_url.slice(-1) : 1)
       this.totalPages = Number(data.last_page_url ? data.last_page_url.slice(-1) : 1)
       this.rows = data.data
+    },
+    crateOrUpdate () {
+      if (this.createOrUpdate === 'create') {
+        this.guardar()
+      } else {
+        this.update()
+      }
+    },
+    guardar () {
+      console.log('guardar')
+      this.$axios.post('api/directorio_categorias', this.Categoria)
+        .then((res) => {
+          console.log(res)
+          this.getProyectos()
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    update () {
+      console.log('update')
+      this.$axios.put('api/directorio_categorias/' + this.Categoria.id, this.Categoria)
+        .then((res) => {
+          console.log(res)
+          this.getProyectos()
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   }
 }

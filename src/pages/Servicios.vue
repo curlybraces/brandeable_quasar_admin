@@ -17,7 +17,7 @@
                 virtual-scroll
                 >
                 <template v-slot:top-left>
-                    <q-btn @click="dialog=true" color="primary" label="Agregar nuevo servicio"></q-btn>
+                    <q-btn :to="'add-servicio'" color="primary" label="Agregar nuevo servicio"></q-btn>
                 </template>
                 <template v-slot:body-cell-archivo="props">
                     <q-td :props="props">
