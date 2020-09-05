@@ -1,46 +1,44 @@
 <template>
   <q-page>
     <div class="row q-mt-md justify-center">
-      <div class="col-md-10 col-xs-12">
-        <q-card bordered class="bg-white items-center flex-sm-center flex-xs-center flex-center" flat>
+      <div class="col-md-12 col-xs-12">
+        <q-card class="bg-white items-center flex-sm-center flex-xs-center flex-center" flat>
 
           <div class="q-pa-md q-gutter-md">
-                <div class="row">
-                  <div class="col-md-12">
-                      <q-input class="espacio" standout  outlined label="Nombre del Cliente" />
-                  </div>
-                    <div class="col-md-2">
-                      <div class="bg-grey-2 q-pa-sm rounded-borders">
-                          <q-toggle 
-                          name="contacto_active"
-                          v-model="activeContacto"
-                          label="Contacto"
-                          />
-                      </div>
-                    </div>
-                    <div class="col-md-10">
-                      <div class="row">
-                        <div class="col-md-3">
-                          <q-input class="espacio" outlined label="Nombres"/>      
-                        </div>
-                        <div class="col-md-3">
-                          <q-input class="espacio" outlined label="Apellidos" />      
-                        </div>
-                        <div class="col-md-3">
-                          <q-input class="espacio" outlined label="Correo" />      
-                        </div>
-                        <div class="col-md-3">
-                          <q-input class="espacio" outlined label="Telefono" />      
-                        </div>
-                      </div>
-                    </div>
-                  <div class="col-md-12">
-                    <q-input class="espacio" outlined label="Paquete Servicios" />
-                  </div>
-                  <div class="col-md-12">
-                    <q-input type="textarea" class="espacio" outlined label="Comentario" />
-                  </div>
+            <div class="row">
+              <div class="col-md-6">
+                  <q-input class="espacio" standout  outlined label="Nombre" v-model="Servicio.nombre"/>
+              </div>
+              <div class="col-md-6">
+                <q-select outlined v-model="selected_presentacion" map-options class="espacio" standout :options="presentaciones" label="Presentaciones" />
+              </div>
+              <div class="col-md-6">
+                <q-input type="textarea" class="espacio" outlined label="Descripción Corta" v-model="Servicio.descripcion_corta"/>
+              </div>
+              <div class="col-md-6">
+                <q-input type="textarea" class="espacio" outlined label="Descripción Larga" v-model="Servicio.descripcion_larga"/>
+              </div>
+              <div class="col-md-4">
+                  <q-select outlined v-model="selected_moneda" map-options class="espacio" standout :options="monedas" label="Moneda" />
+              </div>
+              <div class="col-md-4">
+                  <q-input class="espacio" standout  outlined label="Precio Venta" v-model="Servicio.precio_venta"/>
+              </div>
+              <div class="col-md-4">
+                  <q-input class="espacio" standout  outlined label="Precio Compra" v-model="Servicio.precio_compra"/>
+              </div>
+              <div class="col-md-6">
+                  <q-select outlined v-model="selected_renovacion" map-options class="espacio" standout :options="renovacion" label="Periodo Renovación" />
+              </div>
+              <div class="col-md-6">
+                  <q-input class="espacio" standout  outlined label="Icono" v-model="Servicio.ruta_icono"/>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <q-btn @click="crateOrUpdate" color="primary" label="Guardar" v-close-popup/>
                 </div>
+              </div>
+            </div>
             </div>
         </q-card>
       </div>
@@ -53,16 +51,15 @@ export default {
   name: 'PageIndex',
   data: function () {
     return {
-      Persona: {
-        dni: '',
-        cargo_empresa: '',
-        nombres: '',
-        apellidos: '',
-        correo: '',
-        telefonos: '',
-        anexo: '',
-        celular_trabajo: '',
-        celular_personal: '',
+      Servicio: {
+        presentacion_id: '',
+        nombre: '',
+        descripcion_corta: '',
+        descripcion_larga: '',
+        ruta_icono: '',
+        precio_compra: '',
+        precio_venta: '',
+        periodo_renovacion: ''
       },
 
       activeContacto: false,
@@ -77,13 +74,28 @@ export default {
       categorias: [],
       pagination: {
         rowsPerPage: 10
-      }
+      },
+      monedas: [
+        { value: 'PEN', label: 'SOLES'},
+        { value: 'USD', label: 'DOLARES'}
+      ],
+      renovacion: [
+        { value: 'UNI', label: 'Única Vez'},
+        { value: 'RM', label: 'Renovación Mensual'},
+        { value: 'RA', label: 'Renovación Anual'}
+      ],
+
+      presentaciones: [],
+      selected_presentacion: '',
+      selected_moneda: '',
+      selected_renovacion: ''
     }
   },
 
   async created () {
     //await this.getCategorias()
     await this.loadCategorias()
+    await this.getPresentaciones()
     //console.log(this.options)  
 
   },
@@ -120,24 +132,10 @@ export default {
           console.log(err)
         })
     },
-    editEmpresa (prop) {
-      this.$axios.get('api/directorio_categorias/' + prop.row.id)
+    async getPresentaciones () {
+      this.$axios.get('api/presentaciones')
         .then((res) => {
-          console.log(res)
-          this.Categoria.id = res.data.id
-          this.Categoria.nombre = res.data.nombre
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-      this.dialog = true
-      this.createOrUpdate = 'update'
-    },
-    async deleteCategoria (prop) {
-      this.$axios.delete('api/directorio_categorias/' + prop.row.id)
-        .then((res) => {
-          console.log(res)
-          this.getCategorias()
+          this.presentaciones = res.data.map(opt => ({ label: opt.nombre, value: opt.id.toString() }))
         })
         .catch((err) => {
           console.log(err)
@@ -163,6 +161,11 @@ export default {
       this.rows = data.data
     },
     crateOrUpdate () {
+      this.Servicio.presentacion_id = this.selected_presentacion.value;
+      this.Servicio.precio_moneda = this.selected_moneda.value;
+      this.Servicio.periodo_renovacion = this.selected_renovacion.value;
+      console.log(this.Servicio)
+
       if (this.createOrUpdate === 'create') {
         this.guardar()
       } else {
@@ -171,10 +174,10 @@ export default {
     },
     guardar () {
       console.log('guardar')
-      this.$axios.post('api/directorio_empresas', this.Empresa)
+      this.$axios.post('api/servicios', this.Servicio)
         .then((res) => {
           console.log(res)
-          redirect('/')
+          this.$router.push("servicios")
         })
         .catch((err) => {
           console.log(err)

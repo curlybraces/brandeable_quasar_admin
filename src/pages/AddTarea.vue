@@ -21,7 +21,8 @@
                     <q-input class="espacio" outlined label="Encargado"  v-model="Tarea.encargado"/>
                 </div>
                 <div class="col-md-12">
-                    <q-input class="espacio" outlined label="Estado"  v-model="Tarea.estado"/>
+                    <!--<q-input class="espacio" outlined label="Estado"  v-model="Tarea.estado"/>-->
+                    <q-select outlined v-model="selected_estado" map-options class="espacio" standout :options="estados" label="Estados" />
                 </div>
                
             </div>
@@ -73,6 +74,13 @@ export default {
       pagination: {
         rowsPerPage: 10
       },
+
+      estados: [
+        { value: 'ASIGNADO', label: 'ASIGNADO'},
+        { value: 'PENDIENTE', label: 'PENDIENTE'},
+        { value: 'TERMINADO', label: 'TERMINADO'},
+      ],
+      selected_estado: '',
 
       group: [],
 
@@ -131,6 +139,7 @@ export default {
       this.rows = data.data
     },
     crateOrUpdate () {
+      this.Tarea.estado = this.selected_estado.value;
       if (this.createOrUpdate === 'create') {
         this.guardar()
       } else {

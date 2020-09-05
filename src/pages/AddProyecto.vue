@@ -26,8 +26,11 @@
                     type="textarea"  v-model="Proyecto.descripcion"
                 />
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-8">
                     <q-input class="espacio" outlined label="Dirección"  v-model="Proyecto.direccion"/>
+                </div>
+                <div class="col-md-4">
+                  <q-select outlined v-model="selected_estado" map-options class="espacio" standout :options="estados" label="Estado" />
                 </div>
                 <div class="col-md-6">
                     <q-input class="espacio" outlined label="Nombres Contacto"  v-model="Proyecto.nombres"/>
@@ -95,7 +98,8 @@ export default {
         ubigeo: '',
         nombre_region: '',
         nombre_provincia: '',
-        nombre_distrito: ''
+        nombre_distrito: '',
+        estado: ''
       },
 
       selected_region: {
@@ -131,6 +135,15 @@ export default {
         { name: 'anexo', align: 'left', label: 'Anexo', field: 'anexo', sortable: true },
         { name: 'actions', label: 'Acciones', field: '', align: 'center' }
       ],
+
+      estados: [
+        { value: 'OPT', label: 'OPORTUNIDAD'},
+        { value: 'NEG', label: 'EN NEGOCIACIÓN'},
+        { value: 'DES', label: 'EN DESARROLLO'},
+        { value: 'POSV', label: 'POS VENTA'},
+        { value: 'OPP', label: 'OP. PERDIDA'}
+      ],
+      selected_estado: '',
       
       categorias: [],
       pagination: {
@@ -240,6 +253,7 @@ export default {
         this.Proyecto.nombre_region = this.selected_region.label;
         this.Proyecto.nombre_provincia = this.selected_provincia.label;
         this.Proyecto.nombre_distrito = this.selected_distrito.label;
+        this.Proyecto.estado = this.selected_estado.value;
 
       if (this.createOrUpdate === 'create') {
         this.guardar()
@@ -252,7 +266,7 @@ export default {
         this.$axios.post('api/proyectos', this.Proyecto)
         .then((res) => {
           console.log(res)
-          this.$router.push("/")
+          this.$router.push("proyectos")
         })
         .catch((err) => {
           console.log(err)
