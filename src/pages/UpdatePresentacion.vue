@@ -1,14 +1,32 @@
-
 <template>
   <q-page>
     <div class="row q-mt-md justify-center">
-
       <div class="col-md-12 col-xs-12">
+        <q-card bordered class="bg-white items-center flex-sm-center flex-xs-center flex-center" flat>
+
+          <div class="q-pa-md q-gutter-md">
+            <div class="row">
+                  <div class="col-md-6">
+                      <q-select outlined v-model="selected_tipo" map-options class="espacio" standout :options="tipos" label="Tipo" />
+                  </div>
+                  <div class="col-md-6">
+                      <q-input class="espacio" outlined label="Nombre" v-model="Presentacion.nombre"/>
+                  </div>
+                  <div class="col-md-12">
+                    <q-input class="espacio"
+                      filled
+                      type="textarea"  label="Condiciones Comerciales (3ra pag.)"  v-model="Presentacion.condiciones_comerciales"
+                    />
+              </div>          
+            </div>
+          </div>
+        </q-card>
+
         <q-card bordered class="bg-white items-center flex-sm-center flex-xs-center flex-center" flat>
             <div class="q-pa-md">
                 <q-table
                 :columns="columns"
-                :data="categorias"
+                :data="Presentacion.items"
                 :pagination.sync="pagination"
                 @row-dblclick="rowClick"
                 bordered
@@ -18,7 +36,8 @@
                 virtual-scroll
                 >
                 <template v-slot:top-left>
-                    <q-btn :to="'/add-presentacion'" color="primary" label="Agregar nueva presentación"></q-btn>
+                    <h5>Contenido de la Presentación</h5>
+                    <q-btn :to="'/presentacion-hoja/' + Presentacion.id" color="primary" label="Nuevo" v-close-popup/>
                 </template>
                 <template v-slot:body-cell-archivo="props">
                     <q-td :props="props">
@@ -31,18 +50,15 @@
                         <q-btn :to="'/update-presentacion/' + props.row.id" color="grey" dense flat icon="edit" round
                                 title="Modificar"></q-btn>
                         <q-btn @click="deletePresentacion(props)" color="grey" dense flat icon="delete" round title="borrar"></q-btn>
-
                     </q-td>
                 </template>
                 <template v-slot:body-cell-creado="props">
                     <q-td :props="props">
-
                     <q-item-label>{{ new Date(props.row.creado).toLocaleDateString() }}</q-item-label>
                     </q-td>
                 </template>
                 </q-table>
                 <div class=" ">
-
                     <div class="q-pa-lg flex flex-center no-wrap">
                         <q-btn @click="goToPage(1)" flat>
                         primero
@@ -61,7 +77,13 @@
                         </q-btn>
                     </div>
                 </div>
-            </div>
+            
+                <div class="row">
+                <div class="col-md-12">
+                    <q-btn @click="update" color="primary" label="Modificar" v-close-popup/>
+                </div>
+                </div>   
+            </div> 
         </q-card>
       </div>
     </div>
@@ -74,9 +96,13 @@ export default {
   name: 'PageIndex',
   data: function () {
     return {
-      Categoria: {
+
+      Presentacion: {
         id: '',
-        nombre: ''
+        tipo: '',
+        nombre: '',
+        condiciones_comerciales: '',
+        items: []
       },
       createOrUpdate: 'create',
       dialog: false,
@@ -85,23 +111,27 @@ export default {
       prevPage: 0,
       nextPage: 0,
 
+      pagination: {
+        rowsPerPage: 20
+      },
+
       columns: [
-        { name: 'id', align: 'left', label: 'Id', field: 'id', sortable: true },
-        { name: 'tipo', align: 'left', label: 'Tipo de Presentación', field: 'tipo', sortable: true },
+        { name: 'orden', align: 'left', label: 'Orden', field: 'orden', sortable: true },
+        { name: 'ruta_img_bg', align: 'left', label: 'Imagen', field: 'ruta_img_bg', sortable: true },
         { name: 'nombre', align: 'left', label: 'Nombre', field: 'nombre', sortable: true },
-        { name: 'created', align: 'left', label: 'Fec. Creación', field: 'created', sortable: true },
-        { name: 'modified', align: 'left', label: 'Últ Modificación', field: 'modified', sortable: true },
         { name: 'actions', label: 'Acciones', field: '', align: 'center' }
       ],
-      categorias: [],
-      pagination: {
-        rowsPerPage: 10
-      }
+
+      tipos: [
+        { value: 'CLIENTE', label: 'PRESENTACIÓN PARA CLIENTES'},
+        { value: 'VENDEDOR', label: 'PRESENETACIÓN PARA VENDEDORES'}
+      ],
+      selected_tipo: '',
     }
   },
 
   async created () {
-    await this.getPresentaciones()
+    this.getPresentacion()
   },
   methods: {
     async rowClick (e, row) {
@@ -112,38 +142,6 @@ export default {
       this.card.diagnostico = row.diagnostico
       this.card.fecha = row.creado
       this.card.ruta_voucher = this.$axios.defaults.baseURL + '/' + row.archivo
-    },
-    async getPresentaciones () {
-      this.$axios.get('api/presentaciones')
-        .then((res) => {
-          this.categorias = res.data
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    },
-    editPresentacion (prop) {
-      this.$axios.get('api/presentaciones/' + prop.row.id)
-        .then((res) => {
-          console.log(res)
-          this.Categoria.id = res.data.id
-          this.Categoria.nombre = res.data.nombre
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-      this.dialog = true
-      this.createOrUpdate = 'update'
-    },
-    async deletePresentacion (prop) {
-      this.$axios.delete('api/presentaciones/' + prop.row.id)
-        .then((res) => {
-          console.log(res)
-          this.getPresentaciones()
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     async goToPage (page) {
       this.page = page
@@ -163,7 +161,55 @@ export default {
       this.prevPage = Number(data.prev_page_url ? data.prev_page_url.slice(-1) : 1)
       this.totalPages = Number(data.last_page_url ? data.last_page_url.slice(-1) : 1)
       this.rows = data.data
+    },
+    getPresentacion() {
+      this.$axios.get('api/presentaciones/' + this.$route.params.id)
+        .then((res) => {
+            console.log(res.data)
+          this.Presentacion = res.data
+          console.log(this.Presentacion)
+          this.selected_tipo = this.tipos.find(element => element.value === this.Presentacion.tipo)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    async deletePresentacion (prop) {
+      this.$axios.delete('api/presentaciones/' + prop.row.id)
+        .then((res) => {
+          console.log(res)
+          this.getPresentaciones()
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    guardar () {
+      console.log('guardar')
+      this.$axios.post('api/presentaciones', this.Presentacion)
+        .then((res) => {
+          console.log(res)
+          this.$router.push("presentaciones")
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    update () {
+      console.log('update')
+      this.$axios.put('api/presentaciones/' + this.Presentacion.id, this.Presentacion)
+        .then((res) => {
+          console.log(res)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   }
 }
 </script>
+<style>
+  .espacio{
+    padding: 5px;
+  }
+</style>

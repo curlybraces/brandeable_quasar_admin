@@ -27,8 +27,10 @@
                 <template v-slot:body-cell-actions="props">
                     <q-td :props="props">
                     <!--            <q-btn dense round flat color="grey" @click="editRow(props)" icon="edit"></q-btn>-->
-                        <q-btn @click="editServicio(props)" color="grey" dense flat icon="edit" round
-                                title="diagnóstico"></q-btn>
+                        <!--<q-btn @click="editServicio(props)" color="grey" dense flat icon="edit" round
+                                title="diagnóstico"></q-btn>-->
+                        <q-btn :to="'/add-servicio/' + props.row.id" color="grey" dense flat icon="edit" round
+                                title="Modificar"></q-btn>
                         <q-btn @click="deleteServicio(props)" color="grey" dense flat icon="delete" round title="borrar"></q-btn>
 
                     </q-td>

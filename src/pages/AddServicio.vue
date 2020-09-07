@@ -52,6 +52,7 @@ export default {
   data: function () {
     return {
       Servicio: {
+        id: '',
         presentacion_id: '',
         nombre: '',
         descripcion_corta: '',
@@ -88,7 +89,7 @@ export default {
       presentaciones: [],
       selected_presentacion: '',
       selected_moneda: '',
-      selected_renovacion: ''
+      selected_renovacion: '',
     }
   },
 
@@ -97,6 +98,7 @@ export default {
     await this.loadCategorias()
     await this.getPresentaciones()
     //console.log(this.options)  
+    this.isEditOrUpdate(this.$route.params.id)
 
   },
   methods: {
@@ -108,6 +110,29 @@ export default {
       this.card.diagnostico = row.diagnostico
       this.card.fecha = row.creado
       this.card.ruta_voucher = this.$axios.defaults.baseURL + '/' + row.archivo
+    },
+    isEditOrUpdate(id){
+        if (this.$route.params === null) {
+            this.createOrUpdate = 'create'
+        } else {
+            this.btnName = 'Modificar'
+            this.createOrUpdate = 'update'
+            this.getServicio(id)
+        }
+    },
+    getServicio (id) {
+      console.log("id"+id)
+      this.$axios.get('api/servicios/' + id)
+        .then((res) => {
+          this.Servicio = res.data
+          console.log(this.Servicio)
+          this.selected_presentacion = this.presentaciones.find(element => element.value === this.Servicio.presentacion_id)
+          this.selected_moneda =  this.monedas.find(element => element.value === this.Servicio.precio_moneda);
+          this.selected_renovacion =  this.renovacion.find(element => element.value === this.Servicio.periodo_renovacion);
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
     async loadCategorias () {
       this.$axios.get('api/directorio_categorias')
@@ -161,9 +186,13 @@ export default {
       this.rows = data.data
     },
     crateOrUpdate () {
-      this.Servicio.presentacion_id = this.selected_presentacion.value;
-      this.Servicio.precio_moneda = this.selected_moneda.value;
-      this.Servicio.periodo_renovacion = this.selected_renovacion.value;
+      console.log()
+      if(this.selected_presentacion !== undefined)
+        this.Servicio.presentacion_id = this.selected_presentacion.value;
+      if(this.selected_moneda !== undefined)
+        this.Servicio.precio_moneda = this.selected_moneda.value;
+      if(this.selected_renovacion !== undefined)
+        this.Servicio.periodo_renovacion = this.selected_renovacion.value;
       console.log(this.Servicio)
 
       if (this.createOrUpdate === 'create') {
@@ -185,9 +214,10 @@ export default {
     },
     update () {
       console.log('update')
-      this.$axios.put('api/directorio_empresas/' + this.Empresa.id, this.Empresa)
+      this.$axios.put('api/servicios/' + this.Servicio.id, this.Servicio)
         .then((res) => {
           console.log(res)
+          this.$router.push("/")
         })
         .catch((err) => {
           console.log(err)

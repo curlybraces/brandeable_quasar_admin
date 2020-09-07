@@ -6,18 +6,24 @@
 
           <div class="q-pa-md q-gutter-md">
             <div class="row">
-                  <div class="col-md-6">
-                      <q-select outlined v-model="selected_tipo" map-options class="espacio" standout :options="tipos" label="Tipo" />
-                  </div>
-                  <div class="col-md-6">
-                      <q-input class="espacio" outlined label="Nombre" v-model="Presentacion.nombre"/>
-                  </div>
-                  <div class="col-md-12">
-                    <q-input class="espacio"
-                      filled
-                      type="textarea"  label="Condiciones Comerciales (3ra pag.)"  v-model="Presentacion.condiciones_comerciales"
-                    />
-              </div>          
+                <div class="col-md-6">
+                    <q-input class="espacio" outlined label="Orden" v-model="Hoja.orden"/>
+                </div>
+                <div class="col-md-6">
+                    <q-input class="espacio" outlined label="Nombre" v-model="Hoja.nombre"/>
+                </div>
+                <div class="col-md-12">
+                  <img style="width: 100%" 
+                  :src="img" alt=""
+                  onerror="this.src='https://gerware.com.pe/media/a4_placeholder.png'"
+                  >
+                  <q-file @change="imgUpload()" accept=".jpg, image/*" label="Presentacion" outlined required
+                      v-model="Hoja.voucher">
+                      <template v-slot:prepend>
+                  <q-icon name="attach_file"/>
+                    </template>
+                  </q-file>
+                </div>          
             </div>
             <div class="row">
               <div class="col-md-12">
@@ -38,12 +44,15 @@ export default {
   data: function () {
     return {
 
-      Presentacion: {
+      Hoja: {
         id: '',
-        tipo: '',
+        orden: '',
         nombre: '',
-        condiciones_comerciales: ''
+        ruta_img_bg: '',
+        voucher: null,
+        presentacion_id: ''
       },
+
       createOrUpdate: 'create',
       dialog: false,
       page: 1,
@@ -51,20 +60,17 @@ export default {
       prevPage: 0,
       nextPage: 0,
 
+      img: null,
+
       pagination: {
         rowsPerPage: 20
       },
-
-      tipos: [
-        { value: 'CLIENTE', label: 'PRESENTACIÓN PARA CLIENTES'},
-        { value: 'VENDEDOR', label: 'PRESENETACIÓN PARA VENDEDORES'}
-      ],
-      selected_tipo: '',
     }
   },
-
+  
   async created () {
-    //await this.getCategorias()
+    //console.log(this.$route.params)
+    this.Hoja.presentacion_id = this.$route.params.id
   },
   methods: {
     async rowClick (e, row) {
@@ -96,7 +102,7 @@ export default {
       this.rows = data.data
     },
     crateOrUpdate () {
-      this.Presentacion.tipo = this.selected_tipo.value
+      console.log(this.Hoja)
       if (this.createOrUpdate === 'create') {
         this.guardar()
       } else {
@@ -105,10 +111,15 @@ export default {
     },
     guardar () {
       console.log('guardar')
-      this.$axios.post('api/presentaciones', this.Presentacion)
+      var form = new FormData()
+      form.append('orden', this.Hoja.orden)
+      form.append('presentacion_id', this.Hoja.presentacion_id)
+      form.append('file', this.voucher)
+      console.log(form)
+      this.$axios.post('api/presentacion_item', form)
         .then((res) => {
           console.log(res)
-          this.$router.push("presentaciones")
+          //this.$router.push("presentaciones")
         })
         .catch((err) => {
           console.log(err)
@@ -123,6 +134,13 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+    imgUpload(e) {
+      console.log('gaa');
+      var file = new FileReader();
+      file.onload = function (e) {
+        this.$refs.voucherImage.src = this.voucher;
+      }
     }
   }
 }

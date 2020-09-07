@@ -17,10 +17,16 @@ const routes = [
       { path: '/categorias', component: () => import('pages/Categorias.vue') },
       { path: '/cotizaciones', component: () => import('pages/Cotizaciones.vue') },
       { path: '/add-cotizacion', component: () => import('pages/AddCotizacion.vue') },
+      
       { path: '/servicios', component: () => import('pages/Servicios.vue') },
       { path: '/add-servicio', component: () => import('pages/AddServicio.vue') },
+      { path: '/add-servicio/:id', component: () => import('pages/AddServicio.vue') },
+
       { path: '/presentaciones', component: () => import('pages/Presentaciones.vue') },
       { path: '/add-presentacion', component: () => import('pages/AddPresentacion.vue') },
+      { path: '/update-presentacion/:id', component: () => import('pages/UpdatePresentacion.vue') },
+      { path: '/presentacion-hoja/:id', component: () => import('pages/PresentacionHojaCrud.vue') },
+
       { path: '/marcas-add', component: () => import('pages/MercaderiasMarcaAdd.vue') },
       { path: '/marcas-add/:id', component: () => import('pages/MercaderiasMarcaAdd.vue') },
       { path: '/mercaderia_categorias', component: () => import('pages/MercaderiasCategoria.vue') },
