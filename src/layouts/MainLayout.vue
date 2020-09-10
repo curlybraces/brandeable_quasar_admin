@@ -16,8 +16,8 @@
         </q-toolbar-title>
 
         <div>
-          <q-btn flat to="login">
-            Login
+          <q-btn flat @click="logout">
+            Logout
           </q-btn>
         </div>
       </q-toolbar>
@@ -141,6 +141,24 @@ export default {
     return {
       leftDrawerOpen: false,
       essentialLinks: linksData
+    }
+  },
+  methods:{
+    async logout(){
+      var token=this.$q.localStorage.getItem("token");
+      console.log(token )
+      var data = await this.$axios.post('/api/logout',null,{
+        headers:{
+          'Authorization': token
+        }
+      })
+      console.log(data);
+      if (data.status === 200) {
+        alert("logout")
+      } else
+        alert("Error")
+
+      this.$q.localStorage.clear();
     }
   }
 }

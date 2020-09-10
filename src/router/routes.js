@@ -1,11 +1,14 @@
 
 const routes = [
   {
-    path: '/',
+   path: '/login',
+    component: () => import('pages/LoginPage.vue')
+  },
+  {
+    path: '/main',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
-      { path: '/login', component: () => import('pages/LoginPage.vue') },
       { path: '/add-cuenta', component: () => import('pages/AddCuenta.vue') },
       { path: '/cuentas', component: () => import('pages/Cuentas.vue') },
       { path: '/add-proyecto', component: () => import('pages/addProyecto.vue') },
@@ -17,7 +20,7 @@ const routes = [
       { path: '/categorias', component: () => import('pages/Categorias.vue') },
       { path: '/cotizaciones', component: () => import('pages/Cotizaciones.vue') },
       { path: '/add-cotizacion', component: () => import('pages/AddCotizacion.vue') },
-      
+
       { path: '/servicios', component: () => import('pages/Servicios.vue') },
       { path: '/add-servicio', component: () => import('pages/AddServicio.vue') },
       { path: '/add-servicio/:id', component: () => import('pages/AddServicio.vue') },

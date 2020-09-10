@@ -1,15 +1,19 @@
 <template>
-  <q-page class="justify-center text-center">
-    <q-card bordered class="q-gutter-md q-ma-md content-center" style="width: 350px">
-      <q-card-section>
-        <q-input dense label="Usuario" v-model="usuario"></q-input>
-        <q-input dense label="Password" type="password" v-model="password"></q-input>
-      </q-card-section>
-      <q-card-actions align="center">
-        <q-btn @click="iniciarSesion" color="primary">Iniciar sesión</q-btn>
-      </q-card-actions>
-    </q-card>
-  </q-page>
+  <q-layout>
+    <q-page-container >
+      <q-page >
+        <q-card bordered class="absolute-center " style="width: 350px;height: 350px">
+          <q-card-section>
+            <q-input v-model="usuario" dense label="Usuario"></q-input>
+            <q-input v-model="password" dense label="Password" type="password"></q-input>
+          </q-card-section>
+          <q-card-actions align="center">
+            <q-btn color="primary" @click="iniciarSesion">Iniciar sesión</q-btn>
+          </q-card-actions>
+        </q-card>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
@@ -25,17 +29,20 @@ export default {
     async iniciarSesion() {
 
       var form = new FormData()
-      form.append("name", this.usuario)
+      form.append("user", this.usuario)
       form.append("password", this.password)
-      var data = await this.$axios.post('/api/login', form)
+      var {data} = await this.$axios.post('/api/login', form)
       console.log(data);
-      if (data.status===200){
-      alert("se ha logeado")
-      }else
-        alert("Error")
+      if (data.token ) {
+        alert("se ha logeado")
+        this.$q.localStorage.set("token", "Bearer " + data.token)
+        this.$router.push("main")
+      } else
+        alert("Datos incorrectos, verificar.")
 
-      this.$q.localStorage.set("token","Bearer "+data.token)
-    }
+    },
+
+
   }
 }
 </script>
